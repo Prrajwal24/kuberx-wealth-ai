@@ -7,6 +7,11 @@ export interface UserProfile {
   existingEMIs: number;
   riskAppetite: 'conservative' | 'balanced' | 'aggressive';
   financialGoals: string[];
+  xp: number;
+  coins: number;
+  badges: string[];
+  completedAcademyLevels: number[];
+  completedLessons: string[];
 }
 
 export interface PurchaseItem {
@@ -50,6 +55,11 @@ export const mockUser: UserProfile = {
   existingEMIs: 8500,
   riskAppetite: 'balanced',
   financialGoals: ['house', 'car', 'retirement'],
+  xp: 120,
+  coins: 250,
+  badges: ['Finance Explorer'],
+  completedAcademyLevels: [],
+  completedLessons: ['1-1', '1-2'],
 };
 
 export const mockExpenses: Expense[] = [
