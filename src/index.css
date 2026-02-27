@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 40 20% 95%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 40 20% 95%;
+
+    --popover: 220 18% 10%;
+    --popover-foreground: 40 20% 95%;
+
+    --primary: 43 96% 56%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 40 20% 90%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 43 80% 45%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 220 20% 7%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 43 96% 56%;
+
+    --radius: 0.75rem;
+
+    --gold-glow: 0 0 20px hsl(43 96% 56% / 0.3);
+    --card-glow: 0 0 40px hsl(43 96% 56% / 0.05);
+
+    --sidebar-background: 220 22% 6%;
+    --sidebar-foreground: 40 20% 85%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 16% 12%;
+    --sidebar-accent-foreground: 40 20% 90%;
+    --sidebar-border: 220 14% 14%;
+    --sidebar-ring: 43 96% 56%;
+
+    --chart-1: 43 96% 56%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 217 91% 60%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 0 72% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 90% 45%), hsl(43 96% 60%));
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 90% 45%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass-card {
+    background: hsl(220 18% 10% / 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(220 14% 18% / 0.5);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px hsl(43 96% 56% / 0.2), 0 0 60px hsl(43 96% 56% / 0.1);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 20px hsl(142 71% 45% / 0.2);
+  }
+
+  .glow-destructive {
+    box-shadow: 0 0 20px hsl(0 72% 51% / 0.2);
+  }
+
+  .score-ring {
+    filter: drop-shadow(0 0 10px hsl(43 96% 56% / 0.4));
+  }
+}
