@@ -2,10 +2,8 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Wallet, Target, PieChart, ShoppingBag,
-  TrendingUp, BarChart3, Shield, GraduationCap, Bot, Menu, X,
-  LogOut, Settings, User as UserIcon, BrainCircuit
+  TrendingUp, BarChart3, Shield, GraduationCap, Bot, LogOut, Settings, User as UserIcon
 } from "lucide-react";
-import { useState, useEffect } from "react";
 import YakshaMascot from "./YakshaMascot";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -19,145 +17,128 @@ import {
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/allocation", icon: Wallet, label: "Salary Split" },
+  { to: "/expenses", icon: PieChart, label: "Expenses" },
+  { to: "/goals", icon: Target, label: "Goals" },
+  { to: "/buy-check", icon: ShoppingBag, label: "Buy Check" },
+  { to: "/wealth-sim", icon: TrendingUp, label: "Wealth Sim" },
+  { to: "/market", icon: BarChart3, label: "Markets" },
+  { to: "/emergency", icon: Shield, label: "Emergency" },
   { to: "/learn", icon: GraduationCap, label: "Academy" },
-  { to: "/expenses", icon: PieChart, label: "Tracker" },
-  { to: "/buy-check", icon: ShoppingBag, label: "Smart Spending" },
   { to: "/advisor", icon: Bot, label: "AI Advisor" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-foreground font-body">
-      {/* Background Glows */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-secondary/10 blur-[120px]" />
-      </div>
-
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 bg-black/40 backdrop-blur-xl border-b border-white/10" : "py-6 bg-transparent"
-          }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary p-[1px] shadow-[0_0_20px_rgba(192,132,252,0.3)] group-hover:shadow-[0_0_30px_rgba(192,132,252,0.5)] transition-all">
-              <div className="w-full h-full rounded-xl bg-[#0a0a0c] flex items-center justify-center">
-                <BrainCircuit className="text-primary" size={22} />
-              </div>
+    <div className="min-h-screen bg-background flex flex-col pt-20">
+      {/* Top Navigation Bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-20 bg-[#0a0a0c]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl">
+        <div className="max-w-[1600px] h-full mx-auto px-6 flex items-center justify-between gap-8">
+          {/* Branding */}
+          <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center shadow-lg shadow-primary/20">
+              <span className="text-primary-foreground font-display font-bold text-xl">K</span>
             </div>
-            <span className="font-display font-bold text-2xl tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              KuberX
-            </span>
+            <div className="hidden sm:block">
+              <h1 className="font-display font-bold text-xl text-foreground leading-tight">KuberX</h1>
+              <p className="text-[9px] text-muted-foreground tracking-widest uppercase opacity-60">Wealth Intelligence</p>
+            </div>
           </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+          {/* Horizontal Menu */}
+          <nav className="hidden lg:flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.to;
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${isActive
-                      ? "bg-primary/20 text-primary shadow-[inset_0_0_12px_rgba(192,132,252,0.2)]"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    }`}
+                  className={({ isActive }) => `
+                                        relative group flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap
+                                        ${isActive
+                      ? "text-violet-400 bg-violet-600/10 shadow-[0_0_20px_rgba(124,58,237,0.15)]"
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"}
+                                    `}
                 >
-                  <item.icon size={16} />
-                  {item.label}
+                  <item.icon size={16} className={isActive ? "text-violet-400" : "group-hover:text-white"} />
+                  <span>{item.label}</span>
+
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active"
+                      className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-8 h-[2px] bg-violet-500 rounded-full shadow-[0_0_10px_rgba(139,92,246,0.8)]"
+                    />
+                  )}
                 </NavLink>
               );
             })}
-          </div>
+          </nav>
 
-          <div className="flex items-center gap-4">
+          {/* Right Section: User Profile */}
+          <div className="flex items-center gap-4 shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-foreground hover:bg-white/10 hover:border-primary/50 transition-all active:scale-95 shadow-lg">
+                <button className="w-10 h-10 rounded-full gold-gradient shadow-lg flex items-center justify-center text-sm font-bold text-primary-foreground outline-none ring-offset-background focus:ring-2 focus:ring-primary/20 transition-all hover:scale-105 active:scale-95">
                   {user?.name?.substring(0, 2).toUpperCase() || "UX"}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 glass-cyber border-white/10" align="end">
-                <DropdownMenuLabel className="font-display">
-                  <div className="flex flex-col">
-                    <span className="text-sm">{user?.name}</span>
-                    <span className="text-[10px] font-normal text-muted-foreground">{user?.email}</span>
+              <DropdownMenuContent className="w-64 mt-2 glass-card border-white/10" align="end">
+                <DropdownMenuLabel className="font-display p-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-bold text-foreground">{user?.name}</span>
+                    <span className="text-[10px] font-normal text-muted-foreground uppercase tracking-widest">{user?.email}</span>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/5" />
-                <DropdownMenuItem className="gap-2 focus:bg-primary/20 focus:text-primary cursor-pointer transition-colors" onClick={() => navigate("/")}>
-                  Dashboard
+                <DropdownMenuSeparator className="bg-white/5 mx-2" />
+                <DropdownMenuItem className="gap-3 p-3 focus:bg-primary/10 focus:text-primary cursor-pointer transition-colors mx-2 rounded-lg">
+                  <UserIcon size={18} /> <span className="text-xs font-bold uppercase tracking-wider">Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 focus:bg-primary/20 focus:text-primary cursor-pointer transition-colors">
-                  Profile settings
+                <DropdownMenuItem className="gap-3 p-3 focus:bg-primary/10 focus:text-primary cursor-pointer transition-colors mx-2 rounded-lg">
+                  <Settings size={18} /> <span className="text-xs font-bold uppercase tracking-wider">Settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuSeparator className="bg-white/5 mx-2" />
                 <DropdownMenuItem
-                  className="gap-2 focus:bg-destructive/20 focus:text-destructive cursor-pointer text-destructive transition-colors"
+                  className="gap-3 p-3 focus:bg-destructive/10 focus:text-destructive cursor-pointer text-destructive transition-colors mx-2 rounded-lg"
                   onClick={() => {
                     logout();
                     navigate('/login');
                   }}
                 >
-                  <LogOut size={16} /> Logout
+                  <LogOut size={18} /> <span className="text-xs font-bold uppercase tracking-wider">Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <button
-              className="lg:hidden w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-foreground"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="lg:hidden absolute top-full left-0 right-0 p-4 bg-[#0a0a0c]/95 backdrop-blur-2xl border-b border-white/10"
-          >
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-sm font-medium border border-white/10"
-                >
-                  <item.icon size={18} className="text-primary" />
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </nav>
-
-      {/* Main Content */}
-      <main className="pt-28 pb-20 px-4 md:px-6 relative z-10">
-        <div className="max-w-7xl mx-auto">
-          {children}
+        {/* Mobile Menu (Visible only under LG) */}
+        <div className="lg:hidden h-12 border-t border-white/5 overflow-x-auto no-scrollbar bg-[#0a0a0c]/40 backdrop-blur-md">
+          <div className="flex items-center gap-2 px-4 h-full min-w-max">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `
+                                    px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all
+                                    ${isActive ? "text-violet-400 bg-violet-600/10" : "text-muted-foreground"}
+                                `}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
         </div>
+      </header>
+
+      {/* Main content */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
+        {children}
       </main>
 
-      {/* Yaksha Floating Assistant */}
       <YakshaMascot />
     </div>
   );

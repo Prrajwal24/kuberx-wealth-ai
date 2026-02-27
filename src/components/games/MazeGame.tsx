@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Lock, Key, Zap, Activity, Cpu, ShieldAlert } from 'lucide-react';
+import { Trophy, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Lock, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const questions = [
@@ -29,72 +29,42 @@ export default function MazeGame({ onComplete }: { onComplete: (score: number) =
                 setIsFinished(true);
             }
         } else {
-            // Shake effect or reset
+            // Wrong answer - visual shake or restart position?
+            // For simplicity, just reset answering state with a delay
             setTimeout(() => setIsAnswering(false), 500);
         }
     };
 
     if (isFinished) {
         return (
-            <div className="text-center space-y-8 p-10 glass-cyber border neon-border-violet rounded-[2rem]">
-                <div className="w-24 h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto border border-primary/20 shadow-[0_0_50px_rgba(192,132,252,0.4)] animate-bounce">
-                    <Trophy className="text-primary w-12 h-12" />
+            <div className="text-center space-y-6 p-8">
+                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
+                    <Trophy className="text-primary w-10 h-10" />
                 </div>
-                <div className="space-y-4">
-                    <h2 className="text-4xl font-display font-black text-white uppercase tracking-tighter">Maze <span className="text-primary">Decoded</span></h2>
-                    <p className="text-muted-foreground text-lg font-bold">Neural Protocol: <span className="text-white font-black">FINANCE_MASTER_v1</span></p>
-                </div>
-                <Button onClick={() => onComplete(200)} className="w-full h-16 bg-primary text-black font-display font-black text-xl rounded-2xl shadow-[0_0_30px_rgba(192,132,252,0.3)]">
-                    COLLECT FINAL BOUNTY
-                </Button>
+                <h2 className="text-2xl font-display font-bold text-foreground">Escaped the Maze!</h2>
+                <p className="text-muted-foreground">You are now a Finance Master.</p>
+                <Button onClick={() => onComplete(200)} className="w-full gold-gradient py-6 font-bold uppercase">Greatest Reward</Button>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 p-2 flex flex-col items-center relative overflow-hidden">
-            {/* Status Header */}
-            <div className="flex items-center gap-4 text-center">
-                <div className="h-1 w-12 bg-primary/20" />
-                <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Grid Sequence: {position + 1} / 9</p>
-                <div className="h-1 w-12 bg-primary/20" />
-            </div>
-
-            {/* Maze Grid */}
-            <div className="relative w-80 h-80 grid grid-cols-3 grid-rows-3 gap-4 glass-cyber p-4 rounded-[2rem] border border-white/5 shadow-2xl">
+        <div className="space-y-6 p-4 flex flex-col items-center">
+            <div className="relative w-64 h-64 grid grid-cols-3 grid-rows-3 gap-2 bg-secondary/20 p-2 rounded-xl border border-border">
                 {[...Array(9)].map((_, i) => {
                     const isPlayer = i === position;
                     const isGoal = i === 8;
                     const isPath = i <= position || i === 8;
 
                     return (
-                        <motion.div
-                            key={i}
-                            layout
-                            className={`rounded-2xl flex items-center justify-center border-2 transition-all duration-500 relative overflow-hidden ${isPlayer ? 'bg-primary border-primary shadow-[0_0_30px_rgba(192,132,252,0.5)] scale-110 z-10' :
-                                    isGoal ? 'bg-white/5 border-white/10 border-dashed opacity-40' :
-                                        isPath ? 'bg-primary/5 border-primary/10' : 'bg-black/40 border-white/5 opacity-10'
-                                }`}
-                        >
-                            {isPlayer ? (
-                                <div className="relative">
-                                    <Key size={32} className="text-black animate-pulse" />
-                                    <div className="absolute inset-0 bg-white blur-md opacity-40" />
-                                </div>
-                            ) :
-                                isGoal ? <Trophy size={24} className="text-white opacity-20" /> :
-                                    !isPath ? <Lock size={18} className="text-muted-foreground/30" /> :
-                                        <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />}
-
-                            {/* Scanning Light on target */}
-                            {isPlayer && (
-                                <motion.div
-                                    animate={{ top: ['-100%', '200%'] }}
-                                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                                    className="absolute inset-x-0 h-[2px] bg-white/40 pointer-events-none"
-                                />
-                            )}
-                        </motion.div>
+                        <div key={i} className={`rounded-lg flex items-center justify-center border-2 transition-all duration-500 ${isPlayer ? 'bg-primary border-primary glow-gold scale-110 z-10' :
+                            isGoal ? 'bg-success/20 border-success/40 border-dashed' :
+                                isPath ? 'bg-primary/10 border-primary/20' : 'bg-background/40 border-border opacity-50'
+                            }`}>
+                            {isPlayer ? <Key size={24} className="text-primary-foreground animate-bounce" /> :
+                                isGoal ? <Trophy size={20} className="text-success opacity-40" /> :
+                                    !isPath ? <Lock size={16} className="text-muted-foreground" /> : null}
+                        </div>
                     );
                 })}
             </div>
@@ -103,27 +73,16 @@ export default function MazeGame({ onComplete }: { onComplete: (score: number) =
                 {isAnswering ? (
                     <motion.div
                         key="question"
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 1.1 }}
-                        className="w-full max-w-md glass-cyber border neon-border-violet rounded-[2.5rem] p-10 space-y-8 shadow-2xl relative z-20"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="w-full space-y-4 text-center"
                     >
-                        <div className="flex items-center gap-3 justify-center">
-                            <ShieldAlert size={18} className="text-primary animate-pulse" />
-                            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Neural Verification Required</p>
-                        </div>
-
-                        <h3 className="text-2xl font-display font-black text-white text-center leading-tight uppercase">{questions[position].question}</h3>
-
-                        <div className="grid grid-cols-2 gap-4">
+                        <p className="text-sm font-bold text-primary uppercase">Financial Barrier!</p>
+                        <h3 className="text-lg font-display font-bold text-foreground">{questions[position].question}</h3>
+                        <div className="grid grid-cols-2 gap-3">
                             {questions[position].options.map((opt, i) => (
-                                <Button
-                                    key={i}
-                                    onClick={() => handleAnswer(i)}
-                                    className="h-16 bg-white/5 border-white/5 hover:bg-primary hover:text-black hover:border-primary text-sm font-black rounded-2xl transition-all active:scale-[0.98]"
-                                >
-                                    {opt.toUpperCase()}
-                                </Button>
+                                <Button key={i} onClick={() => handleAnswer(i)} variant="outline" className="h-14 font-bold border-primary/20 hover:bg-primary/5">{opt}</Button>
                             ))}
                         </div>
                     </motion.div>
@@ -132,18 +91,11 @@ export default function MazeGame({ onComplete }: { onComplete: (score: number) =
                         key="controls"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-center space-y-8"
+                        className="text-center space-y-4"
                     >
-                        <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground font-medium italic opacity-60">"Authorize the next vector by resolving the financial paradox"</p>
-                            <div className="h-[1px] w-24 bg-white/10 mx-auto" />
-                        </div>
-
-                        <Button
-                            onClick={handleMove}
-                            className="h-20 px-14 bg-primary text-black font-display font-black text-xl rounded-[1.5rem] shadow-[0_0_30px_rgba(192,132,252,0.3)] hover:shadow-[0_0_50px_rgba(192,132,252,0.6)] transition-all group"
-                        >
-                            EXECUTE JUMP <ChevronRight className="ml-3 group-hover:translate-x-2 transition-transform" strokeWidth={3} />
+                        <p className="text-sm text-muted-foreground italic">"Correct answers unlock the path forward"</p>
+                        <Button onClick={handleMove} className="gold-gradient px-12 py-6 font-bold text-lg rounded-2xl shadow-xl">
+                            MOVE FORWARD <ChevronRight className="ml-2" />
                         </Button>
                     </motion.div>
                 )}

@@ -2,45 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 220 20% 7%;
+    --foreground: 40 20% 95%;
 
-    --card: 240 10% 4.5%;
-    --card-foreground: 0 0% 98%;
+    --card: 220 18% 10%;
+    --card-foreground: 40 20% 95%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 40 20% 95%;
 
-    --primary: 270 95% 75%;
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 43 96% 56%;
+    --primary-foreground: 220 20% 7%;
 
-    --secondary: 217 91% 60%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 40 20% 90%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 330 81% 68%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 43 80% 45%;
+    --accent-foreground: 220 20% 7%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 180 100% 50%;
-    --success-foreground: 240 5.9% 10%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 240 5.9% 10%;
+    --warning-foreground: 220 20% 7%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 270 95% 75%;
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 43 96% 56%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
+
+    --gold-glow: 0 0 20px hsl(43 96% 56% / 0.3);
+    --card-glow: 0 0 40px hsl(43 96% 56% / 0.05);
+
+    --sidebar-background: 220 22% 6%;
+    --sidebar-foreground: 40 20% 85%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 16% 12%;
+    --sidebar-accent-foreground: 40 20% 90%;
+    --sidebar-border: 220 14% 14%;
+    --sidebar-ring: 43 96% 56%;
+
+    --chart-1: 43 96% 56%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 217 91% 60%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 0 72% 51%;
   }
 }
 
@@ -50,11 +68,8 @@
   }
 
   body {
-    @apply bg-[#0a0a0c] text-foreground font-body antialiased selection:bg-primary/30 selection:text-primary;
-    background-image:
-      radial-gradient(circle at 0% 0%, rgba(192, 132, 252, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
-    background-attachment: fixed;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
   }
 
   h1,
@@ -63,97 +78,45 @@
   h4,
   h5,
   h6 {
-    @apply font-display tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
   }
 }
 
 @layer utilities {
-  .glass-cyber {
-    background: rgba(10, 10, 12, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-  }
-
-  .glass-cyber-light {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .neon-border-violet {
-    border: 1px solid rgba(192, 132, 252, 0.3);
-    box-shadow: 0 0 20px rgba(192, 132, 252, 0.1), inset 0 0 20px rgba(192, 132, 252, 0.05);
-  }
-
-  .neon-border-blue {
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1), inset 0 0 20px rgba(59, 130, 246, 0.05);
-  }
-
-  .neon-border-pink {
-    border: 1px solid rgba(244, 114, 182, 0.3);
-    box-shadow: 0 0 20px rgba(244, 114, 182, 0.1), inset 0 0 20px rgba(244, 114, 182, 0.05);
-  }
-
-  .neon-border-success {
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.1), inset 0 0 20px rgba(34, 197, 94, 0.05);
-  }
-
-  .glow-text-violet {
-    text-shadow: 0 0 15px rgba(192, 132, 252, 0.6);
-  }
-
-  .glow-text-blue {
-    text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
-  }
-
-  .glow-text-success {
-    text-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
-  }
-
-  .animate-spin-slow {
-    animation: spin 8s linear infinite;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .neon-border-blue {
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1), inset 0 0 15px rgba(59, 130, 246, 0.05);
-  }
-
-  .neon-border-pink {
-    border: 1px solid rgba(244, 114, 182, 0.3);
-    box-shadow: 0 0 15px rgba(244, 114, 182, 0.1), inset 0 0 15px rgba(244, 114, 182, 0.05);
-  }
-
-  .glow-text-violet {
-    text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
-  }
-
-  .glow-text-blue {
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 90% 45%), hsl(43 96% 60%));
   }
 
   .gold-text {
-    @apply glow-text-violet;
-    background: linear-gradient(135deg, #c084fc, #3b82f6);
+    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 90% 45%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .gold-gradient {
-    background: linear-gradient(135deg, #c084fc, #3b82f6);
+  .glass-card {
+    background: hsl(220 18% 10% / 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(220 14% 18% / 0.5);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 20px hsl(43 96% 56% / 0.2), 0 0 60px hsl(43 96% 56% / 0.1);
+  }
+
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 20px hsl(142 71% 45% / 0.2);
+  }
+
+  .glow-destructive {
+    box-shadow: 0 0 20px hsl(0 72% 51% / 0.2);
+  }
+
+  .score-ring {
+    filter: drop-shadow(0 0 10px hsl(43 96% 56% / 0.4));
   }
 }

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Wallet, TrendingUp, PiggyBank, Sparkles, IndianRupee, AlertTriangle, Shield, Activity, Zap } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { Wallet, TrendingUp, PiggyBank, Sparkles, IndianRupee, AlertTriangle, Shield } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import KuberScoreRing from "@/components/KuberScoreRing";
 import MetricCard from "@/components/MetricCard";
 import { mockUser, calculateKuberScore, getScoreCategory, calculateSalaryAllocation, monthlyExpenseData, mockMarketData } from "@/lib/mockData";
@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function Dashboard() {
   const { user } = useAuth();
 
+  // Use real user data or fall back to mock
   const activeUser = user?.financialProfile ? {
     ...mockUser,
     name: user.name,
@@ -21,137 +22,102 @@ export default function Dashboard() {
   const scoreCategory = getScoreCategory(kuberScore);
   const allocation = calculateSalaryAllocation(activeUser);
   const emergencyMonths = Math.round((activeUser.currentSavings / activeUser.monthlyExpenses) * 10) / 10;
-
   return (
-    <div className="space-y-10 animate-in fade-in duration-1000">
-      {/* Futuristic Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/5">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-          <div className="flex items-center gap-2 text-primary font-display text-sm font-semibold tracking-[0.2em] uppercase mb-2">
-            <Activity size={14} className="animate-pulse" />
-            System Active
-          </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-white tracking-tight">
-            Command <span className="text-primary glow-text-violet">Center</span>
-          </h1>
-          <p className="text-muted-foreground mt-2 font-body text-lg">
-            Welcome back, <span className="text-white font-medium">{activeUser.name.split(' ')[0]}</span>. Your AI wealth engine is optimized.
-          </p>
-        </motion.div>
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="text-3xl font-display font-bold text-foreground">
+          Welcome back, <span className="gold-text">{activeUser.name.split(' ')[0]}</span>
+        </h1>
+        <p className="text-muted-foreground mt-1">Your financial intelligence at a glance</p>
+      </motion.div>
 
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-[1px] bg-white/10 hidden md:block" />
-          <div className="text-right">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Market Status</p>
-            <div className="flex items-center gap-2 text-success font-display font-bold">
-              <Zap size={14} fill="currentColor" />
-              BULLISH
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Grid: Score + Net Worth */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Kuber Score Widget */}
+      {/* Score + Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-4 glass-cyber rounded-3xl p-8 neon-border-violet flex flex-col items-center justify-center relative overflow-hidden active:scale-[0.99] transition-transform"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-card rounded-2xl p-8 flex flex-col items-center justify-center border border-primary/20 glow-gold"
         >
-          <div className="absolute top-0 right-0 p-4 opacity-20">
-            <Activity className="text-primary animate-pulse" />
-          </div>
           <KuberScoreRing score={kuberScore} label={scoreCategory.label} />
-          <p className="text-xs text-muted-foreground mt-8 text-center leading-relaxed font-body">
-            System analysis: Your <span className="text-primary">{(activeUser.monthlySalary - activeUser.monthlyExpenses) > 0 ? 'Surplus' : 'Deficit'}</span> and <span className="text-secondary">{emergencyMonths}m buffer</span> driving current rating.
+          <p className="text-xs text-muted-foreground mt-4 text-center max-w-[200px]">
+            Your savings rate of {Math.round(((activeUser.monthlySalary - activeUser.monthlyExpenses) / activeUser.monthlySalary) * 100)}% and {emergencyMonths} months emergency fund contribute to your score.
           </p>
         </motion.div>
 
-        {/* Net Worth Trend Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="lg:col-span-8 glass-cyber rounded-3xl p-8 neon-border-blue relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="font-display font-bold text-xl text-white">Net Worth Trend</h3>
-              <p className="text-xs text-muted-foreground">Historical wealth projection</p>
-            </div>
-            <div className="text-right">
-              <span className="text-xs font-semibold text-success bg-success/10 px-2 py-1 rounded border border-success/20">+12.4%</span>
-            </div>
-          </div>
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+          <MetricCard icon={IndianRupee} label="Monthly Salary" value={`₹${activeUser.monthlySalary.toLocaleString()}`} variant="gold" />
+          <MetricCard icon={Wallet} label="Expenses" value={`₹${activeUser.monthlyExpenses.toLocaleString()}`} sub={`${Math.round((activeUser.monthlyExpenses / activeUser.monthlySalary) * 100)}% of salary`} variant="warning" />
+          <MetricCard icon={PiggyBank} label="Savings" value={`₹${activeUser.currentSavings.toLocaleString()}`} sub={`${emergencyMonths} months buffer`} variant="success" />
+          <MetricCard icon={Shield} label="EMIs" value={`₹${activeUser.existingEMIs.toLocaleString()}`} sub={`${Math.round((activeUser.existingEMIs / activeUser.monthlySalary) * 100)}% of salary`} variant="destructive" />
+        </div>
+      </div>
 
-          <ResponsiveContainer width="100%" height={240}>
+      {/* Expense Trend + Allocation */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-card rounded-2xl p-6 border border-border">
+          <h3 className="font-display font-semibold text-foreground mb-4">Expense Trend</h3>
+          <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={monthlyExpenseData}>
               <defs>
-                <linearGradient id="cyberGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#c084fc" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(43, 96%, 56%)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(43, 96%, 56%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" fontSize={10} axisLine={false} tickLine={false} />
-              <YAxis stroke="rgba(255,255,255,0.3)" fontSize={10} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000)}k`} />
-              <Tooltip
-                contentStyle={{ background: '#0a0a0c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 0 20px rgba(0,0,0,0.5)' }}
-                itemStyle={{ color: '#c084fc' }}
-              />
-              <Area type="monotone" dataKey="amount" stroke="#c084fc" fill="url(#cyberGrad)" strokeWidth={3} animationDuration={2000} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 14%, 18%)" />
+              <XAxis dataKey="month" stroke="hsl(220, 10%, 55%)" fontSize={12} />
+              <YAxis stroke="hsl(220, 10%, 55%)" fontSize={12} tickFormatter={(v) => `₹${(v / 1000)}k`} />
+              <Tooltip contentStyle={{ background: 'hsl(220, 18%, 10%)', border: '1px solid hsl(220, 14%, 18%)', borderRadius: '8px', color: 'hsl(40, 20%, 95%)' }} />
+              <Area type="monotone" dataKey="amount" stroke="hsl(43, 96%, 56%)" fill="url(#goldGrad)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
-      </div>
 
-      {/* Quick Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { label: "Revenue", value: activeUser.monthlySalary, icon: IndianRupee, glow: "neon-border-violet" },
-          { label: "Burn Rate", value: activeUser.monthlyExpenses, icon: Activity, glow: "neon-border-pink" },
-          { label: "Reserve", value: activeUser.currentSavings, icon: Shield, glow: "neon-border-blue" },
-          { label: "Assets", value: activeUser.currentSavings * 1.5, icon: TrendingUp, glow: "neon-border-violet" },
-        ].map((m, i) => (
-          <motion.div
-            key={m.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 + (i * 0.1) }}
-            className={`glass-cyber rounded-2xl p-6 ${m.glow} flex items-center justify-between group cursor-pointer hover:-translate-y-1 transition-all`}
-          >
-            <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1 group-hover:text-primary transition-colors">{m.label}</p>
-              <h4 className="text-xl font-display font-bold text-white">₹{Math.round(m.value).toLocaleString()}</h4>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary border border-white/5 group-hover:border-primary/50 transition-all">
-              <m.icon size={20} />
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Markets Heatmap Mock */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="glass-cyber rounded-3xl p-8 neon-border-violet"
-      >
-        <h3 className="font-display font-bold text-xl text-white mb-6">Market Pulsar</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {Object.entries(mockMarketData).map(([name, data]: [string, any]) => (
-            <div key={name} className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">{name}</span>
-                <span className={`text-[10px] font-bold ${data.change >= 0 ? 'text-success' : 'text-accent'}`}>
-                  {data.change}%
-                </span>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="glass-card rounded-2xl p-6 border border-border">
+          <h3 className="font-display font-semibold text-foreground mb-4">Smart Salary Split</h3>
+          <div className="space-y-4">
+            {[
+              { label: 'Essentials', amount: allocation.essentials, pct: allocation.essentials / activeUser.monthlySalary, color: 'bg-primary' },
+              { label: 'Investments', amount: allocation.investments, pct: allocation.investments / activeUser.monthlySalary, color: 'bg-success' },
+              { label: 'Savings', amount: allocation.savings, pct: allocation.savings / activeUser.monthlySalary, color: 'bg-chart-3' },
+              { label: 'Lifestyle', amount: allocation.lifestyle, pct: allocation.lifestyle / activeUser.monthlySalary, color: 'bg-chart-4' },
+            ].map((item) => (
+              <div key={item.label}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-muted-foreground">{item.label}</span>
+                  <span className="text-foreground font-medium">₹{item.amount.toLocaleString()}</span>
+                </div>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${item.color}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${item.pct * 100}%` }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  />
+                </div>
               </div>
-              <p className="text-lg font-display font-bold text-white group-hover:text-primary transition-colors">
-                {typeof data.price === 'number' ? `₹${data.price.toLocaleString()}` : data.price}
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Market Glance */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-6 border border-border">
+        <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
+          <TrendingUp size={18} className="text-primary" /> Market Pulse
+        </h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {Object.entries(mockMarketData).map(([key, data]) => (
+            <div key={key} className="bg-secondary/50 rounded-xl p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">{key}</p>
+              <p className="text-xl font-display font-bold text-foreground mt-1">
+                {key === 'nifty' || key === 'sensex' ? data.price.toLocaleString() : `₹${data.price.toLocaleString()}`}
+                {data.unit && <span className="text-xs text-muted-foreground font-normal ml-1">{data.unit}</span>}
               </p>
+              <span className={`text-xs font-medium ${data.change >= 0 ? 'text-success' : 'text-destructive'}`}>
+                {data.change >= 0 ? '▲' : '▼'} {Math.abs(data.change)}%
+              </span>
             </div>
           ))}
         </div>

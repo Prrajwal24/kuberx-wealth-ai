@@ -33,8 +33,8 @@ export default function SignupPage() {
         }
         try {
             await signup(formData);
-            toast({ title: "Account Created!", description: "Welcome to KuberX. Let's personalize your journey." });
-            navigate('/onboarding');
+            toast({ title: "Account Created!", description: "Welcome to KuberX. Your financial journey starts now." });
+            navigate('/');
         } catch (error) {
             toast({ variant: "destructive", title: "Error", description: "Could not create account." });
         }
