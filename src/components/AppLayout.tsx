@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard, Wallet, Target, PieChart, ShoppingBag,
   TrendingUp, BarChart3, Shield, GraduationCap, Bot, Menu, X,
-  LogOut, Settings, User as UserIcon
+  LogOut, Settings, User as UserIcon, BrainCircuit
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import YakshaMascot from "./YakshaMascot";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -19,86 +19,78 @@ import {
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/allocation", icon: Wallet, label: "Salary Split" },
-  { to: "/expenses", icon: PieChart, label: "Expenses" },
-  { to: "/goals", icon: Target, label: "Goals" },
-  { to: "/buy-check", icon: ShoppingBag, label: "Buy Check" },
-  { to: "/wealth-sim", icon: TrendingUp, label: "Wealth Sim" },
-  { to: "/market", icon: BarChart3, label: "Markets" },
-  { to: "/emergency", icon: Shield, label: "Emergency" },
   { to: "/learn", icon: GraduationCap, label: "Academy" },
+  { to: "/expenses", icon: PieChart, label: "Tracker" },
+  { to: "/buy-check", icon: ShoppingBag, label: "Smart Spending" },
   { to: "/advisor", icon: Bot, label: "AI Advisor" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+    <div className="min-h-screen bg-[#0a0a0c] text-foreground font-body">
+      {/* Background Glows */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-secondary/10 blur-[120px]" />
+      </div>
 
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border transform transition-transform duration-300 lg:translate-x-0 lg:static ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-          <div className="w-9 h-9 rounded-lg gold-gradient flex items-center justify-center">
-            <span className="text-primary-foreground font-display font-bold text-lg">K</span>
+      {/* Navigation */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-3 bg-black/40 backdrop-blur-xl border-b border-white/10" : "py-6 bg-transparent"
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigate("/")}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary p-[1px] shadow-[0_0_20px_rgba(192,132,252,0.3)] group-hover:shadow-[0_0_30px_rgba(192,132,252,0.5)] transition-all">
+              <div className="w-full h-full rounded-xl bg-[#0a0a0c] flex items-center justify-center">
+                <BrainCircuit className="text-primary" size={22} />
+              </div>
+            </div>
+            <span className="font-display font-bold text-2xl tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+              KuberX
+            </span>
           </div>
-          <div>
-            <h1 className="font-display font-bold text-lg text-foreground">KuberX</h1>
-            <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Wealth Intelligence</p>
+
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${isActive
+                      ? "bg-primary/20 text-primary shadow-[inset_0_0_12px_rgba(192,132,252,0.2)]"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                    }`}
+                >
+                  <item.icon size={16} />
+                  {item.label}
+                </NavLink>
+              );
+            })}
           </div>
-          <button className="ml-auto lg:hidden text-muted-foreground" onClick={() => setSidebarOpen(false)}>
-            <X size={20} />
-          </button>
-        </div>
 
-        <nav className="p-3 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                  ? "bg-primary/10 text-primary glow-gold"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  }`}
-              >
-                <item.icon size={18} className={isActive ? "text-primary" : ""} />
-                {item.label}
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"
-                  />
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 min-h-screen">
-        <header className="sticky top-0 z-30 flex items-center gap-4 px-6 py-4 bg-background/80 backdrop-blur-lg border-b border-border">
-          <button className="lg:hidden text-muted-foreground" onClick={() => setSidebarOpen(true)}>
-            <Menu size={22} />
-          </button>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-9 h-9 rounded-full gold-gradient shadow-lg flex items-center justify-center text-xs font-bold text-primary-foreground outline-none ring-offset-background focus:ring-2 focus:ring-primary/20 transition-all active:scale-95">
+                <button className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-foreground hover:bg-white/10 hover:border-primary/50 transition-all active:scale-95 shadow-lg">
                   {user?.name?.substring(0, 2).toUpperCase() || "UX"}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 mt-2 glass-card border-white/10" align="end">
+              <DropdownMenuContent className="w-56 glass-cyber border-white/10" align="end">
                 <DropdownMenuLabel className="font-display">
                   <div className="flex flex-col">
                     <span className="text-sm">{user?.name}</span>
@@ -106,15 +98,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-white/5" />
-                <DropdownMenuItem className="gap-2 focus:bg-primary/10 focus:text-primary cursor-pointer">
-                  <UserIcon size={16} /> Profile
+                <DropdownMenuItem className="gap-2 focus:bg-primary/20 focus:text-primary cursor-pointer transition-colors" onClick={() => navigate("/")}>
+                  Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 focus:bg-primary/10 focus:text-primary cursor-pointer">
-                  <Settings size={16} /> Settings
+                <DropdownMenuItem className="gap-2 focus:bg-primary/20 focus:text-primary cursor-pointer transition-colors">
+                  Profile settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-white/5" />
                 <DropdownMenuItem
-                  className="gap-2 focus:bg-destructive/10 focus:text-destructive cursor-pointer text-destructive"
+                  className="gap-2 focus:bg-destructive/20 focus:text-destructive cursor-pointer text-destructive transition-colors"
                   onClick={() => {
                     logout();
                     navigate('/login');
@@ -124,12 +116,48 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <button
+              className="lg:hidden w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-foreground"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
-        </header>
-        <div className="p-6">
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:hidden absolute top-full left-0 right-0 p-4 bg-[#0a0a0c]/95 backdrop-blur-2xl border-b border-white/10"
+          >
+            <div className="flex flex-col gap-2">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-sm font-medium border border-white/10"
+                >
+                  <item.icon size={18} className="text-primary" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </nav>
+
+      {/* Main Content */}
+      <main className="pt-28 pb-20 px-4 md:px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
           {children}
         </div>
       </main>
+
+      {/* Yaksha Floating Assistant */}
       <YakshaMascot />
     </div>
   );

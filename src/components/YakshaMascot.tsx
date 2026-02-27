@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { Bot, Send, X, MessageCircle, Sparkles, TrendingUp, IndianRupee, GraduationCap, Zap, Info, HelpCircle } from 'lucide-react';
+import { Bot, Send, X, MessageCircle, Sparkles, TrendingUp, IndianRupee, GraduationCap, Zap, Info, HelpCircle, Activity } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { mockUser } from '@/lib/mockData';
@@ -131,37 +131,41 @@ export default function YakshaMascot() {
                         initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="mb-4 w-80 sm:w-96 glass-card border border-primary/20 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
-                        style={{ maxHeight: '500px' }}
+                        className="mb-4 w-80 sm:w-96 glass-cyber neon-border-violet rounded-[2rem] shadow-2xl overflow-hidden flex flex-col backdrop-blur-3xl"
+                        style={{ maxHeight: '550px' }}
                     >
                         {/* Header */}
-                        <div className="p-4 gold-gradient flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 overflow-hidden">
+                        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-white/5">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-[#0a0a0c] flex items-center justify-center border border-white/10 overflow-hidden relative group">
+                                    <div className="absolute inset-0 bg-primary/20 animate-pulse" />
                                     <YakshaSVG isAnimated={false} />
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-bold text-primary-foreground leading-tight">Yaksha</h3>
-                                    <p className="text-[10px] text-primary-foreground/80 uppercase font-bold tracking-widest">Financial Guardian</p>
+                                    <h3 className="font-display font-bold text-white leading-tight">YAKSHA <span className="text-[10px] text-primary ml-1 uppercase tracking-widest">v2.0</span></h3>
+                                    <div className="flex items-center gap-2">
+                                        <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1, repeat: Infinity }} className="w-1.5 h-1.5 bg-success rounded-full" />
+                                        <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-[0.2em]">Neural Link Stable</p>
+                                    </div>
                                 </div>
                             </div>
-                            <button onClick={() => setIsOpen(false)} className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                                <X size={20} />
+                            <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 text-white transition-all">
+                                <X size={16} />
                             </button>
                         </div>
 
                         {/* Messages */}
-                        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[300px] bg-background/40 scrollbar-hide">
+                        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 min-h-[350px] bg-black/20 scrollbar-hide">
                             {messages.map((msg, idx) => (
                                 <motion.div
                                     key={idx}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, y: 10, x: msg.role === 'user' ? 20 : -20 }}
+                                    animate={{ opacity: 1, y: 0, x: 0 }}
                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
-                                        ? 'gold-gradient text-primary-foreground shadow-md'
-                                        : 'bg-secondary border border-border text-foreground shadow-sm'
+                                    <div className={`max-w-[85%] px-5 py-3.5 rounded-2xl text-[13px] leading-relaxed shadow-lg ${msg.role === 'user'
+                                        ? 'bg-primary text-black font-bold border border-white/20'
+                                        : 'glass-cyber border border-white/5 text-white/90'
                                         }`}>
                                         {msg.content}
                                     </div>
@@ -170,12 +174,12 @@ export default function YakshaMascot() {
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="p-3 bg-secondary/30 border-t border-border overflow-x-auto whitespace-nowrap scrollbar-hide flex gap-2">
+                        <div className="p-4 bg-white/5 border-t border-white/10 overflow-x-auto whitespace-nowrap scrollbar-hide flex gap-3">
                             {getSuggestions().map(s => (
                                 <button
                                     key={s}
                                     onClick={() => { setInput(s); setTimeout(handleSend, 100); }}
-                                    className="px-3 py-1.5 rounded-full border border-primary/20 bg-background/50 text-[10px] font-bold text-primary hover:bg-primary/10 transition-colors uppercase tracking-wider"
+                                    className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 text-[9px] font-bold text-white/70 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all uppercase tracking-[0.2em]"
                                 >
                                     {s}
                                 </button>
@@ -183,17 +187,17 @@ export default function YakshaMascot() {
                         </div>
 
                         {/* Input */}
-                        <div className="p-3 border-t border-border bg-background/80 backdrop-blur-md">
-                            <div className="flex gap-2">
+                        <div className="p-4 border-t border-white/10 bg-white/5">
+                            <div className="flex gap-3">
                                 <Input
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleSend()}
-                                    placeholder="Ask your guardian..."
-                                    className="bg-secondary border-border h-10 text-sm focus-visible:ring-primary/40"
+                                    placeholder="Execute query..."
+                                    className="bg-black/40 border-white/10 h-12 text-sm focus:ring-primary/40 rounded-xl"
                                 />
-                                <Button onClick={handleSend} size="icon" className="gold-gradient w-10 h-10 shrink-0 shadow-lg">
-                                    <Send size={16} className="text-primary-foreground" />
+                                <Button onClick={handleSend} size="icon" className="w-12 h-12 rounded-xl bg-primary hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(192,132,252,0.3)] group">
+                                    <Send size={18} className="text-black group-hover:translate-x-0.5 transition-transform" />
                                 </Button>
                             </div>
                         </div>
@@ -206,10 +210,19 @@ export default function YakshaMascot() {
                 onClick={() => setIsOpen(!isOpen)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`group relative w-16 h-16 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(251,191,36,0.2)] transition-all duration-500
-          ${isOpen ? 'bg-secondary border-2 border-border rotate-90' : 'gold-gradient border-2 border-white/20 glow-gold'}
+                className={`group relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden
+          ${isOpen ? 'bg-[#0a0a0c] border border-white/20 rotate-90 scale-90' : 'bg-[#0a0a0c] border border-primary/40 shadow-[0_0_30px_rgba(192,132,252,0.2)]'}
         `}
             >
+                {/* Background Glow */}
+                {!isOpen && (
+                    <motion.div
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="absolute inset-0 bg-primary blur-2xl"
+                    />
+                )}
+
                 <AnimatePresence mode="wait">
                     {isOpen ? (
                         <motion.div
@@ -218,7 +231,7 @@ export default function YakshaMascot() {
                             animate={{ rotate: 0, opacity: 1 }}
                             exit={{ rotate: 90, opacity: 0 }}
                         >
-                            <X size={28} className="text-foreground" />
+                            <X size={32} className="text-white" />
                         </motion.div>
                     ) : (
                         <motion.div
@@ -226,20 +239,12 @@ export default function YakshaMascot() {
                             initial={{ scale: 0, rotate: 45 }}
                             animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, rotate: -45 }}
-                            className="relative"
+                            className="relative z-10"
                         >
                             <YakshaSVG isWaving={isWaving} />
 
-                            {/* Notification Bubble */}
-                            {!isOpen && (
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-background"
-                                >
-                                    1
-                                </motion.div>
-                            )}
+                            {/* Status Indicator */}
+                            <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full blur-[1px] animate-pulse" />
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -251,70 +256,71 @@ export default function YakshaMascot() {
 function YakshaSVG({ isWaving = false, isAnimated = true }: { isWaving?: boolean; isAnimated?: boolean }) {
     return (
         <motion.svg
-            width="40"
-            height="40"
+            width="48"
+            height="48"
             viewBox="0 0 100 100"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             animate={isAnimated ? {
-                y: [0, -10, 0],
+                y: [0, -8, 0],
+                rotate: [0, 2, -2, 0]
             } : {}}
             transition={{
-                duration: 3,
+                duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
             }}
         >
-            {/* Body / Aura */}
             <defs>
-                <radialGradient id="goldGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                    <stop offset="0%" stopColor="#FBBF24" />
-                    <stop offset="100%" stopColor="#D97706" />
+                <radialGradient id="cyberGold" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stopColor="#c084fc" />
+                    <stop offset="100%" stopColor="#3b82f6" />
                 </radialGradient>
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-                    <feMerge>
-                        <feMergeNode in="coloredBlur" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
+                <filter id="neon_glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
             </defs>
 
-            {/* Main Body */}
+            {/* Spectral Body */}
             <motion.path
-                d="M50 20C35 20 25 35 25 50C25 70 50 85 50 85C50 85 75 70 75 50C75 35 65 20 50 20Z"
-                fill="url(#goldGradient)"
-                filter="url(#glow)"
+                d="M50 15C30 15 20 30 20 45C20 65 50 85 50 85C50 85 80 65 80 45C80 30 70 15 50 15Z"
+                fill="url(#cyberGold)"
+                fillOpacity="0.8"
+                filter="url(#neon_glow)"
+                animate={{ fillOpacity: [0.6, 0.9, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
             />
 
-            {/* Face */}
-            <circle cx="40" cy="45" r="4" fill="#6B21A8" />
-            <circle cx="60" cy="45" r="4" fill="#6B21A8" />
-            <path d="M42 55Q50 62 58 55" stroke="#6B21A8" strokeWidth="3" strokeLinecap="round" />
+            {/* Holographic Face */}
+            <circle cx="40" cy="45" r="3" fill="#ffffff" />
+            <circle cx="60" cy="45" r="3" fill="#ffffff" />
+            <path d="M42 55Q50 62 58 55" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
 
-            {/* Sparkles */}
+            {/* Neural Pulses */}
             <motion.circle
-                cx="20" cy="30" r="2" fill="#FDE68A"
-                animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-            />
-            <motion.circle
-                cx="80" cy="40" r="2" fill="#FDE68A"
-                animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
+                cx="50" cy="45" r="25"
+                stroke="#c084fc"
+                strokeWidth="0.5"
+                strokeDasharray="4 4"
+                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             />
 
-            {/* Waving Arm */}
+            {/* Data Particulates */}
+            <motion.circle cx="15" cy="25" r="1.5" fill="#c084fc" animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity }} />
+            <motion.circle cx="85" cy="35" r="1.5" fill="#3b82f6" animate={{ opacity: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
+
+            {/* Signaling Arm */}
             {isWaving && (
                 <motion.path
-                    d="M75 50L90 40"
-                    stroke="#FBBF24"
-                    strokeWidth="6"
+                    d="M80 45L95 35"
+                    stroke="#c084fc"
+                    strokeWidth="4"
                     strokeLinecap="round"
-                    initial={{ rotate: 0 }}
-                    animate={{ rotate: [-20, 20, -20] }}
-                    transition={{ duration: 0.5, repeat: 4 }}
-                    style={{ originX: '75px', originY: '50px' }}
+                    animate={{ rotate: [-15, 15, -15], x: [0, 2, 0] }}
+                    transition={{ duration: 0.4, repeat: 5 }}
+                    style={{ originX: '80px', originY: '45px' }}
                 />
             )}
         </motion.svg>
