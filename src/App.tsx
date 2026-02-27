@@ -15,31 +15,56 @@ import Emergency from "./pages/Emergency";
 import Learn from "./pages/Learn";
 import Advisor from "./pages/Advisor";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Onboarding from "./pages/Onboarding";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppLayout>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/allocation" element={<Allocation />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/buy-check" element={<BuyCheck />} />
-            <Route path="/wealth-sim" element={<WealthSim />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/emergency" element={<Emergency />} />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/advisor" element={<Advisor />} />
-            <Route path="*" element={<NotFound />} />
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected Onboarding */}
+            <Route path="/onboarding" element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            } />
+
+            {/* Protected App Routes */}
+            <Route path="/*" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/allocation" element={<Allocation />} />
+                    <Route path="/expenses" element={<Expenses />} />
+                    <Route path="/goals" element={<Goals />} />
+                    <Route path="/buy-check" element={<BuyCheck />} />
+                    <Route path="/wealth-sim" element={<WealthSim />} />
+                    <Route path="/market" element={<Market />} />
+                    <Route path="/emergency" element={<Emergency />} />
+                    <Route path="/learn" element={<Learn />} />
+                    <Route path="/advisor" element={<Advisor />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AppLayout>
+              </ProtectedRoute>
+            } />
           </Routes>
-        </AppLayout>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

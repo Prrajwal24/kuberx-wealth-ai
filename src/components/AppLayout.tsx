@@ -1,11 +1,21 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Wallet, Target, PieChart, ShoppingBag,
-  TrendingUp, BarChart3, Shield, GraduationCap, Bot, Menu, X
+  TrendingUp, BarChart3, Shield, GraduationCap, Bot, Menu, X,
+  LogOut, Settings, User as UserIcon
 } from "lucide-react";
 import { useState } from "react";
 import YakshaMascot from "./YakshaMascot";
+import { useAuth } from "@/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -23,6 +33,8 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -55,8 +67,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 to={item.to}
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                    ? "bg-primary/10 text-primary glow-gold"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-primary/10 text-primary glow-gold"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
               >
                 <item.icon size={18} className={isActive ? "text-primary" : ""} />
@@ -80,9 +92,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Menu size={22} />
           </button>
           <div className="ml-auto flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full gold-gradient flex items-center justify-center text-xs font-bold text-primary-foreground">
-              AS
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-9 h-9 rounded-full gold-gradient shadow-lg flex items-center justify-center text-xs font-bold text-primary-foreground outline-none ring-offset-background focus:ring-2 focus:ring-primary/20 transition-all active:scale-95">
+                  {user?.name?.substring(0, 2).toUpperCase() || "UX"}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 mt-2 glass-card border-white/10" align="end">
+                <DropdownMenuLabel className="font-display">
+                  <div className="flex flex-col">
+                    <span className="text-sm">{user?.name}</span>
+                    <span className="text-[10px] font-normal text-muted-foreground">{user?.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem className="gap-2 focus:bg-primary/10 focus:text-primary cursor-pointer">
+                  <UserIcon size={16} /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 focus:bg-primary/10 focus:text-primary cursor-pointer">
+                  <Settings size={16} /> Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuItem
+                  className="gap-2 focus:bg-destructive/10 focus:text-destructive cursor-pointer text-destructive"
+                  onClick={() => {
+                    logout();
+                    navigate('/login');
+                  }}
+                >
+                  <LogOut size={16} /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <div className="p-6">
