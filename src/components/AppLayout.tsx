@@ -5,6 +5,7 @@ import {
   TrendingUp, BarChart3, Shield, GraduationCap, Bot, Menu, X
 } from "lucide-react";
 import { useState } from "react";
+import YakshaMascot from "./YakshaMascot";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -53,11 +54,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.to}
                 to={item.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
                     ? "bg-primary/10 text-primary glow-gold"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }`}
+                  }`}
               >
                 <item.icon size={18} className={isActive ? "text-primary" : ""} />
                 {item.label}
@@ -89,6 +89,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+      <YakshaMascot />
     </div>
   );
 }

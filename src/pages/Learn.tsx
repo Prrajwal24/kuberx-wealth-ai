@@ -10,7 +10,6 @@ import { mockUser as initialUser, UserProfile } from "@/lib/mockData";
 import AcademyRoadmap from "@/components/AcademyRoadmap";
 import AcademyLesson from "@/components/AcademyLesson";
 import AcademyQuiz from "@/components/AcademyQuiz";
-import AITutor from "@/components/AITutor";
 
 // Game Imports
 import CoinCatchGame from "@/components/games/CoinCatchGame";
@@ -86,6 +85,11 @@ export default function Learn() {
       if (selectedLevel.rewardNodes.badge && !updatedUser.badges.includes(selectedLevel.rewardNodes.badge)) {
         updatedUser.badges.push(selectedLevel.rewardNodes.badge);
       }
+
+      // Yaksha Celebration!
+      window.dispatchEvent(new CustomEvent('yaksha-celebrate', {
+        detail: { message: `Incredible! You've mastered Level ${selectedLevel.level}: ${selectedLevel.title}. Your treasury of knowledge grows!` }
+      }));
     }
 
     setModalType(null);
@@ -95,6 +99,23 @@ export default function Learn() {
 
   const renderGame = () => {
     if (!selectedLevel) return null;
+
+    // Yaksha game instructions
+    let instruction = "";
+    switch (selectedLevel.game.type) {
+      case 'coins': instruction = "Catch coins to increase your wealth but avoid falling bills!"; break;
+      case 'simulation': instruction = "Review each loan request carefully. Approve the wise, reject the risky!"; break;
+      case 'sorting': instruction = "Drag items to their correct category: Needs, Wants, or Savings."; break;
+      case 'investment': instruction = "Allocate your capital across stocks, gold, and fixed deposits. Watch the market cycles!"; break;
+      case 'maze': instruction = "Solve financial questions to unlock the path and find the exit!"; break;
+    }
+
+    if (instruction) {
+      window.dispatchEvent(new CustomEvent('yaksha-celebrate', {
+        detail: { message: instruction }
+      }));
+    }
+
     switch (selectedLevel.game.type) {
       case 'coins': return <CoinCatchGame onComplete={completeGame} />;
       case 'simulation': return <BankManagerGame onComplete={completeGame} />;
@@ -263,8 +284,6 @@ export default function Learn() {
         <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">CLAIM</Button>
       </motion.div>
 
-      {/* AI Tutor Floating Assistant */}
-      <AITutor />
 
       {/* LEVEL MODALS */}
       <Dialog open={!!selectedLevel} onOpenChange={(open) => !open && setSelectedLevel(null)}>
