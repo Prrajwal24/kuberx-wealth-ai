@@ -20,13 +20,13 @@ export default function Learn() {
 
   // Persistence effect (simulated)
   useEffect(() => {
-    const saved = localStorage.getItem('kuberx_academy_user');
+    const saved = localStorage.getItem('academyProgress');
     if (saved) setUser(JSON.parse(saved));
   }, []);
 
   const saveUser = (updatedUser: UserProfile) => {
     setUser(updatedUser);
-    localStorage.setItem('kuberx_academy_user', JSON.stringify(updatedUser));
+    localStorage.setItem('academyProgress', JSON.stringify(updatedUser));
   };
 
   const handleLevelSelect = (levelNum: number) => {
