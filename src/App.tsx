@@ -20,6 +20,7 @@ import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { injectScrollbarStyles } from "./components/AcademyRoadmap";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        {injectScrollbarStyles()}
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
