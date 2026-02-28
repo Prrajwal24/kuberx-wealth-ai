@@ -176,13 +176,28 @@ export default function Learn() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="roadmap" className="mt-0 outline-none">
-          <div className="glass-card rounded-3xl border border-border/50 bg-secondary/10 overflow-hidden min-h-[600px]">
+        <TabsContent value="roadmap" className="mt-0 outline-none space-y-4">
+          <div className="glass-card rounded-2xl p-4 md:p-6 border border-border/50 bg-secondary/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <p className="text-xl font-display font-bold text-foreground">Learning Progress</p>
+              <p className="text-sm text-muted-foreground font-bold text-primary">{user.completedAcademyLevels.length} / {academyLevels.length} Levels Completed</p>
+            </div>
+            <div className="w-full md:w-1/2">
+              <Progress value={(user.completedAcademyLevels.length / academyLevels.length) * 100} className="h-3 bg-secondary" />
+            </div>
+          </div>
+          <div className="glass-card rounded-3xl border border-border/50 bg-secondary/10 overflow-hidden relative">
+            {/* Top gradient blur for smooth scrolling effect */}
+            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-background/80 to-transparent z-20 pointer-events-none" />
+
             <AcademyRoadmap
               levels={academyLevels}
               user={user}
               onSelectLevel={handleLevelSelect}
             />
+
+            {/* Bottom gradient blur */}
+            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent z-20 pointer-events-none" />
           </div>
         </TabsContent>
 
