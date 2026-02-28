@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Map, Star, Coins, Crown, Briefcase, TrendingUp, Landmark, ShieldCheck } from 'lucide-react';
 import { AcademyLevel } from '@/lib/academyData';
@@ -12,108 +12,150 @@ interface AcademyRoadmapProps {
 
 export default function AcademyRoadmap({ levels, user, onSelectLevel }: AcademyRoadmapProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Helper to get thematic icon per level
     const getLevelIcon = (levelNum: number) => {
         switch (levelNum) {
             case 1: return <Coins size={24} />;
             case 2: return <Briefcase size={24} />;
-            case 3: return <ShieldCheck size={24} />;
-            case 4: return <TrendingUp size={24} />;
-            case 5: return <Landmark size={24} />;
+            case 3: return <TrendingUp size={24} />;
+            case 4: return <Landmark size={24} />;
             default: return <Star size={24} />;
         }
     };
 
-    // Calculate dynamic width based on number of levels + destination badge
-    // Each node gets ~250px space
-    const containerWidth = (levels.length + 1) * 300 + 400; // Extra padding
     const completedRatio = user.completedAcademyLevels.length / levels.length;
+
+    // HORIZONTAL SETTINGS (Desktop)
+    const containerWidth = (levels.length + 1) * 300 + 400;
+
+    // VERTICAL SETTINGS (Mobile)
+    const containerHeight = (levels.length + 1) * 250 + 200;
 
     return (
         <div
             ref={scrollContainerRef}
-            className="relative w-full overflow-x-auto overflow-y-hidden custom-scrollbar bg-card/10"
-            style={{ height: '600px' }}
+            className={`relative w-full custom-scrollbar bg-card/10 ${isMobile ? 'overflow-x-hidden overflow-y-auto' : 'overflow-x-auto overflow-y-hidden'}`}
+            style={{ height: isMobile ? '800px' : '600px', maxHeight: '80vh' }}
         >
             <div
-                className="relative h-full flex items-center px-12 md:px-24"
-                style={{ width: `${containerWidth}px` }}
+                className={`relative flex items-center ${isMobile ? 'flex-col py-12 w-full mx-auto' : 'h-full px-12 md:px-24'}`}
+                style={isMobile ? { height: `${containerHeight}px` } : { width: `${containerWidth}px` }}
             >
                 {/* Background Map Elements */}
-                <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-around">
+                <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-around overflow-hidden">
                     <Map size={400} className="text-primary" />
-                    <Map size={400} className="text-primary" />
+                    {!isMobile && <Map size={400} className="text-primary" />}
                 </div>
 
-                {/* SVG Path connecting the nodes horizontally */}
-                <div className="absolute left-0 right-0 h-[200px] top-1/2 -translate-y-1/2 pointer-events-none z-0 px-24">
-                    <svg width="100%" height="100%" preserveAspectRatio="none" viewBox={`0 0 ${containerWidth} 200`}>
-                        {/* 
-                            Draw a sine-wave style horizontal path 
-                            We use Q (quadratic bezier) to curve up and down
-                        */}
-                        <path
-                            d={`M 0,100 
-                                ${levels.map((_, i) => {
-                                const x1 = i * 300 + 150;
-                                const y = i % 2 === 0 ? 0 : 200; // alternate up and down
-                                const x2 = (i + 1) * 300;
-                                return `Q ${x1},${y} ${x2},100`;
-                            }).join(' ')}
-                                Q ${levels.length * 300 + 150},200 ${levels.length * 300 + 300},100
-                            `}
-                            fill="none"
-                            stroke="rgba(255,255,255,0.1)"
-                            strokeWidth="8"
-                            strokeLinecap="round"
-                            strokeDasharray="10 15"
-                        />
-                        <path
-                            d={`M 0,100 
-                                ${levels.map((_, i) => {
-                                const x1 = i * 300 + 150;
-                                const y = i % 2 === 0 ? 0 : 200;
-                                const x2 = (i + 1) * 300;
-                                return `Q ${x1},${y} ${x2},100`;
-                            }).join(' ')}
-                                Q ${levels.length * 300 + 150},200 ${levels.length * 300 + 300},100
-                            `}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="8"
-                            strokeLinecap="round"
-                            className="text-primary/40 glow-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all"
-                            style={{
-                                strokeDasharray: '4000',
-                                strokeDashoffset: `${4000 - (completedRatio * 4000)}`
-                            }}
-                        />
-                    </svg>
+                {/* SVG Path connecting the nodes */}
+                <div className={`absolute pointer-events-none z-0 ${isMobile ? 'top-0 bottom-0 left-1/2 -translate-x-1/2 w-[120px]' : 'left-0 right-0 h-[200px] top-1/2 -translate-y-1/2 px-24'}`}>
+                    {isMobile ? (
+                        <svg width="100%" height="100%" preserveAspectRatio="none" viewBox={`0 0 100 ${containerHeight}`}>
+                            <path
+                                d={`M 50,50 
+                                    ${levels.map((_, i) => {
+                                    const y1 = i * 250 + 175;
+                                    const x = i % 2 === 0 ? 100 : 0;
+                                    const y2 = (i + 1) * 250 + 50;
+                                    return `Q ${x},${y1} 50,${y2}`;
+                                }).join(' ')}
+                                    Q ${levels.length % 2 === 0 ? 100 : 0},${levels.length * 250 + 175} 50,${levels.length * 250 + 300}
+                                `}
+                                fill="none"
+                                stroke="rgba(255,255,255,0.1)"
+                                strokeWidth="8"
+                                strokeLinecap="round"
+                                strokeDasharray="10 15"
+                            />
+                            <path
+                                d={`M 50,50 
+                                    ${levels.map((_, i) => {
+                                    const y1 = i * 250 + 175;
+                                    const x = i % 2 === 0 ? 100 : 0;
+                                    const y2 = (i + 1) * 250 + 50;
+                                    return `Q ${x},${y1} 50,${y2}`;
+                                }).join(' ')}
+                                    Q ${levels.length % 2 === 0 ? 100 : 0},${levels.length * 250 + 175} 50,${levels.length * 250 + 300}
+                                `}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                strokeLinecap="round"
+                                className="text-primary/40 glow-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all"
+                                style={{ strokeDasharray: '4000', strokeDashoffset: `${4000 - (completedRatio * 4000)}` }}
+                            />
+                        </svg>
+                    ) : (
+                        <svg width="100%" height="100%" preserveAspectRatio="none" viewBox={`0 0 ${containerWidth} 200`}>
+                            <path
+                                d={`M 0,100 
+                                    ${levels.map((_, i) => {
+                                    const x1 = i * 300 + 150;
+                                    const y = i % 2 === 0 ? 0 : 200;
+                                    const x2 = (i + 1) * 300;
+                                    return `Q ${x1},${y} ${x2},100`;
+                                }).join(' ')}
+                                    Q ${levels.length * 300 + 150},200 ${levels.length * 300 + 300},100
+                                `}
+                                fill="none"
+                                stroke="rgba(255,255,255,0.1)"
+                                strokeWidth="8"
+                                strokeLinecap="round"
+                                strokeDasharray="10 15"
+                            />
+                            <path
+                                d={`M 0,100 
+                                    ${levels.map((_, i) => {
+                                    const x1 = i * 300 + 150;
+                                    const y = i % 2 === 0 ? 0 : 200;
+                                    const x2 = (i + 1) * 300;
+                                    return `Q ${x1},${y} ${x2},100`;
+                                }).join(' ')}
+                                    Q ${levels.length * 300 + 150},200 ${levels.length * 300 + 300},100
+                                `}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                strokeLinecap="round"
+                                className="text-primary/40 glow-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all"
+                                style={{ strokeDasharray: '4000', strokeDashoffset: `${4000 - (completedRatio * 4000)}` }}
+                            />
+                        </svg>
+                    )}
                 </div>
 
                 {/* Nodes Container */}
-                <div className="relative z-10 flex items-center h-full w-full">
+                <div className={`relative z-10 flex ${isMobile ? 'flex-col items-center w-full h-full' : 'items-center h-full w-full'}`}>
                     {levels.map((level, idx) => {
                         const isCompleted = user.completedAcademyLevels.includes(level.level);
                         const prevLevelCompleted = level.level === 1 || user.completedAcademyLevels.includes(level.level - 1);
                         const isLocked = !prevLevelCompleted;
                         const isCurrent = prevLevelCompleted && !isCompleted;
 
-                        // Stagger nodes vertically (up and down)
-                        const yOffsetClass = idx % 2 === 0 ? '-translate-y-24' : 'translate-y-24';
+                        // Layout staggering
+                        const desktopYOffset = idx % 2 === 0 ? '-translate-y-24' : 'translate-y-24';
+                        const mobileXOffset = idx % 2 === 0 ? '-translate-x-12' : 'translate-x-12';
 
                         return (
                             <motion.div
                                 key={level.level}
-                                initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                                whileInView={{ opacity: 1, scale: 1, x: 0 }}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, margin: "-100px" }}
                                 transition={{ duration: 0.4, delay: idx * 0.1 }}
                                 className={`absolute flex flex-col items-center group`}
-                                style={{ left: `${idx * 300}px` }}
+                                style={isMobile ? { top: `${idx * 250 + 50}px` } : { left: `${idx * 300}px` }}
                             >
-                                <div className={`flex flex-col items-center ${yOffsetClass}`}>
+                                <div className={`flex flex-col items-center ${isMobile ? mobileXOffset : desktopYOffset}`}>
                                     {/* Decorative Elements around active nodes */}
                                     {isCompleted && (
                                         <motion.div
@@ -163,15 +205,15 @@ export default function AcademyRoadmap({ levels, user, onSelectLevel }: AcademyR
                         );
                     })}
 
-                    {/* Final Destination Badge - Appears at the very end of the horizontal track */}
+                    {/* Final Destination Badge - Appears at the very end of the track */}
                     <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         className="absolute flex flex-col items-center drop-shadow-2xl z-20"
-                        style={{ left: `${levels.length * 300}px` }}
+                        style={isMobile ? { top: `${levels.length * 250 + 100}px` } : { left: `${levels.length * 300}px` }}
                     >
-                        <div className="flex flex-col items-center -translate-y-6">
+                        <div className={`flex flex-col items-center ${isMobile ? '' : '-translate-y-6'}`}>
                             <div className="absolute inset-0 bg-primary opacity-20 blur-3xl rounded-full scale-150 animate-pulse" />
                             <div className="relative w-32 h-32 rounded-3xl bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 border-4 border-white/40 flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.5)] transform rotate-12 hover:rotate-0 transition-all duration-500 hover:scale-110 shrink-0">
                                 <Crown size={64} className="text-yellow-950/80 drop-shadow-md" />
@@ -197,6 +239,7 @@ export function injectScrollbarStyles() {
             __html: `
             .custom-scrollbar::-webkit-scrollbar {
                 height: 8px;
+                width: 8px;
             }
             .custom-scrollbar::-webkit-scrollbar-track {
                 background: rgba(255, 255, 255, 0.05);

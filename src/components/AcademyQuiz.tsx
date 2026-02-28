@@ -37,22 +37,50 @@ export default function AcademyQuiz({ quiz, onComplete, onClose }: QuizModalProp
     };
 
     if (isFinished) {
+        const isPassed = score >= 2;
+
         return (
             <div className="text-center space-y-6 p-8">
-                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="text-primary w-10 h-10" />
+                <div className={`w-20 h-20 ${isPassed ? 'bg-primary/20' : 'bg-destructive/20'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    {isPassed ? <Award className="text-primary w-10 h-10" /> : <XCircle className="text-destructive w-10 h-10" />}
                 </div>
-                <h2 className="text-2xl font-display font-bold text-foreground">Quiz Completed!</h2>
+                <h2 className="text-2xl font-display font-bold text-foreground">
+                    {isPassed ? "Quiz Completed!" : "Quiz Failed!"}
+                </h2>
                 <p className="text-muted-foreground text-lg">
-                    You scored <span className="text-primary font-bold">{score}/{quiz.questions.length}</span>
+                    You scored <span className={`font-bold ${isPassed ? 'text-primary' : 'text-destructive'}`}>{score}/{quiz.questions.length}</span>
                 </p>
-                <div className="bg-secondary/50 rounded-xl p-4 border border-border">
-                    <p className="text-sm font-medium text-foreground">Reward earned:</p>
-                    <p className="text-xl font-bold gold-text">+{quiz.xpValue} XP</p>
-                </div>
-                <Button onClick={() => onComplete(score)} className="w-full gold-gradient text-primary-foreground font-bold py-6">
-                    Claim Rewards
-                </Button>
+
+                {isPassed ? (
+                    <>
+                        <div className="bg-secondary/50 rounded-xl p-4 border border-border">
+                            <p className="text-sm font-medium text-foreground">Reward earned:</p>
+                            <p className="text-xl font-bold gold-text">+{quiz.xpValue} XP</p>
+                        </div>
+                        <Button onClick={() => onComplete(score)} className="w-full gold-gradient text-primary-foreground font-bold h-14">
+                            Claim Rewards & Next Level
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <div className="bg-secondary/50 rounded-xl p-4 border border-border">
+                            <p className="text-sm font-medium text-foreground">You need at least 2 correct answers to pass.</p>
+                        </div>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setCurrentQuestion(0);
+                                setSelectedOption(null);
+                                setIsCorrect(null);
+                                setScore(0);
+                                setIsFinished(false);
+                            }}
+                            className="w-full border-primary/50 text-foreground hover:bg-primary/10 h-14"
+                        >
+                            Retry Quiz
+                        </Button>
+                    </>
+                )}
             </div>
         );
     }

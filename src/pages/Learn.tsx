@@ -11,18 +11,11 @@ import AcademyRoadmap from "@/components/AcademyRoadmap";
 import AcademyLesson from "@/components/AcademyLesson";
 import AcademyQuiz from "@/components/AcademyQuiz";
 
-// Game Imports
-import CoinCatchGame from "@/components/games/CoinCatchGame";
-import BankManagerGame from "@/components/games/BankManagerGame";
-import ExpenseSortGame from "@/components/games/ExpenseSortGame";
-import InvestmentSimGame from "@/components/games/InvestmentSimGame";
-import MazeGame from "@/components/games/MazeGame";
-
 export default function Learn() {
   const [user, setUser] = useState<UserProfile>(initialUser);
   const [activeTab, setActiveTab] = useState("roadmap");
   const [selectedLevel, setSelectedLevel] = useState<AcademyLevel | null>(null);
-  const [modalType, setModalType] = useState<'lesson' | 'game' | 'quiz' | null>(null);
+  const [modalType, setModalType] = useState<'lesson' | 'quiz' | null>(null);
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
 
   // Persistence effect (simulated)
@@ -58,17 +51,8 @@ export default function Learn() {
     if (currentLessonIdx < selectedLevel.lessons.length - 1) {
       setCurrentLessonIdx(prev => prev + 1);
     } else {
-      setModalType('game');
+      setModalType('quiz');
     }
-    saveUser(updatedUser);
-  };
-
-  const completeGame = (score: number) => {
-    if (!selectedLevel) return;
-    const updatedUser = { ...user };
-    updatedUser.xp += selectedLevel.game.xpValue;
-    updatedUser.coins += score;
-    setModalType('quiz');
     saveUser(updatedUser);
   };
 
@@ -95,35 +79,6 @@ export default function Learn() {
     setModalType(null);
     setSelectedLevel(null);
     saveUser(updatedUser);
-  };
-
-  const renderGame = () => {
-    if (!selectedLevel) return null;
-
-    // Yaksha game instructions
-    let instruction = "";
-    switch (selectedLevel.game.type) {
-      case 'coins': instruction = "Catch coins to increase your wealth but avoid falling bills!"; break;
-      case 'simulation': instruction = "Review each loan request carefully. Approve the wise, reject the risky!"; break;
-      case 'sorting': instruction = "Drag items to their correct category: Needs, Wants, or Savings."; break;
-      case 'investment': instruction = "Allocate your capital across stocks, gold, and fixed deposits. Watch the market cycles!"; break;
-      case 'maze': instruction = "Solve financial questions to unlock the path and find the exit!"; break;
-    }
-
-    if (instruction) {
-      window.dispatchEvent(new CustomEvent('yaksha-celebrate', {
-        detail: { message: instruction }
-      }));
-    }
-
-    switch (selectedLevel.game.type) {
-      case 'coins': return <CoinCatchGame onComplete={completeGame} />;
-      case 'simulation': return <BankManagerGame onComplete={completeGame} />;
-      case 'sorting': return <ExpenseSortGame onComplete={completeGame} />;
-      case 'investment': return <InvestmentSimGame onComplete={completeGame} />;
-      case 'maze': return <MazeGame onComplete={completeGame} />;
-      default: return null;
-    }
   };
 
   return (
@@ -308,8 +263,7 @@ export default function Learn() {
             <DialogHeader className="mb-6">
               <DialogTitle className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
                 {modalType === 'lesson' ? `Lesson ${currentLessonIdx + 1}: ${selectedLevel?.lessons[currentLessonIdx].title}` :
-                  modalType === 'game' ? `Level ${selectedLevel?.level} Challenge: ${selectedLevel?.game.name}` :
-                    `Final Quiz: ${selectedLevel?.title}`}
+                  `Final Quiz: ${selectedLevel?.title}`}
               </DialogTitle>
             </DialogHeader>
 
@@ -329,8 +283,6 @@ export default function Learn() {
                       onComplete={completeLesson}
                     />
                   )}
-
-                  {modalType === 'game' && renderGame()}
 
                   {modalType === 'quiz' && (
                     <AcademyQuiz
