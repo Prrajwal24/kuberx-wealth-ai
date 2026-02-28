@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { Wallet, TrendingUp, PiggyBank, Sparkles, IndianRupee, AlertTriangle, Shield } from "lucide-react";
+import { Wallet, TrendingUp, PiggyBank, Sparkles, IndianRupee, AlertTriangle, Shield, Target, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import KuberScoreRing from "@/components/KuberScoreRing";
 import MetricCard from "@/components/MetricCard";
-import { mockUser, calculateKuberScore, getScoreCategory, calculateSalaryAllocation, monthlyExpenseData, mockMarketData } from "@/lib/mockData";
+import { mockUser, calculateKuberScore, getScoreCategory, calculateSalaryAllocation, monthlyExpenseData, mockMarketData, mockGoals } from "@/lib/mockData";
 import { useAuth } from "@/context/AuthContext";
+import { Progress } from "@/components/ui/progress";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -22,6 +23,10 @@ export default function Dashboard() {
   const scoreCategory = getScoreCategory(kuberScore);
   const allocation = calculateSalaryAllocation(activeUser);
   const emergencyMonths = Math.round((activeUser.currentSavings / activeUser.monthlyExpenses) * 10) / 10;
+
+  const recommendedEmergencyFund = activeUser.monthlyExpenses * 6;
+  const emergencyProgress = Math.min(100, (activeUser.currentSavings / recommendedEmergencyFund) * 100);
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -53,25 +58,38 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Expense Trend + Allocation */}
+      {/* Goal Progress + Allocation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-card rounded-2xl p-6 border border-border">
-          <h3 className="font-display font-semibold text-foreground mb-4">Expense Trend</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={monthlyExpenseData}>
-              <defs>
-                <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(43, 96%, 56%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(43, 96%, 56%)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 14%, 18%)" />
-              <XAxis dataKey="month" stroke="hsl(220, 10%, 55%)" fontSize={12} />
-              <YAxis stroke="hsl(220, 10%, 55%)" fontSize={12} tickFormatter={(v) => `₹${(v / 1000)}k`} />
-              <Tooltip contentStyle={{ background: 'hsl(220, 18%, 10%)', border: '1px solid hsl(220, 14%, 18%)', borderRadius: '8px', color: 'hsl(40, 20%, 95%)' }} />
-              <Area type="monotone" dataKey="amount" stroke="hsl(43, 96%, 56%)" fill="url(#goldGrad)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-display font-semibold text-foreground flex items-center gap-2">
+              <Target size={18} className="text-primary" /> Goal Progress Tracker
+            </h3>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Active Goals</span>
+          </div>
+
+          <div className="space-y-6 max-h-[280px] overflow-y-auto pr-2 no-scrollbar">
+            {mockGoals.map((goal) => {
+              const progress = (goal.currentAmount / goal.targetAmount) * 100;
+              return (
+                <div key={goal.id} className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground">{goal.name}</h4>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-tight">
+                        Target: ₹{goal.targetAmount.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-primary">₹{goal.currentAmount.toLocaleString()}</span>
+                      <span className="text-[10px] text-muted-foreground ml-1">({Math.round(progress)}%)</span>
+                    </div>
+                  </div>
+                  <Progress value={progress} className="h-1.5 bg-secondary" />
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="glass-card rounded-2xl p-6 border border-border">
@@ -102,24 +120,62 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Market Glance */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-6 border border-border">
-        <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-          <TrendingUp size={18} className="text-primary" /> Market Pulse
+      {/* Emergency Fund Status */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-6 border border-border overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-8 opacity-5">
+          <ShieldCheck size={120} className="text-success" />
+        </div>
+
+        <h3 className="font-display font-semibold text-foreground mb-6 flex items-center gap-2">
+          <ShieldCheck size={18} className="text-success" /> Emergency Fund Status
         </h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(mockMarketData).map(([key, data]) => (
-            <div key={key} className="bg-secondary/50 rounded-xl p-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">{key}</p>
-              <p className="text-xl font-display font-bold text-foreground mt-1">
-                {key === 'nifty' || key === 'sensex' ? data.price.toLocaleString() : `₹${data.price.toLocaleString()}`}
-                {data.unit && <span className="text-xs text-muted-foreground font-normal ml-1">{data.unit}</span>}
-              </p>
-              <span className={`text-xs font-medium ${data.change >= 0 ? 'text-success' : 'text-destructive'}`}>
-                {data.change >= 0 ? '▲' : '▼'} {Math.abs(data.change)}%
-              </span>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+          <div className="space-y-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Monthly Expense</p>
+              <p className="text-2xl font-display font-bold text-foreground">₹{activeUser.monthlyExpenses.toLocaleString()}</p>
             </div>
-          ))}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Recommended Fund (6x)</p>
+              <p className="text-2xl font-display font-bold text-success">₹{recommendedEmergencyFund.toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Current Saved</p>
+                <p className="text-4xl font-display font-bold text-foreground">₹{activeUser.currentSavings.toLocaleString()}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-bold text-success bg-success/10 px-3 py-1 rounded-full inline-block">
+                  {Math.round(emergencyProgress)}% Complete
+                </p>
+              </div>
+            </div>
+
+            <div className="relative pt-2">
+              <Progress value={emergencyProgress} className="h-4 bg-secondary shadow-inner" />
+              <div className="flex justify-between mt-2 text-[9px] font-bold uppercase tracking-tighter text-muted-foreground px-1">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
+            </div>
+
+            {emergencyProgress >= 100 ? (
+              <div className="flex items-center gap-2 text-success text-xs font-bold mt-2">
+                <CheckCircle2 size={14} /> You have reached your recommended emergency fund goal!
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-warning text-xs font-bold mt-2">
+                <AlertTriangle size={14} /> You need ₹{(recommendedEmergencyFund - activeUser.currentSavings).toLocaleString()} more for full security.
+              </div>
+            )}
+          </div>
         </div>
       </motion.div>
     </div>

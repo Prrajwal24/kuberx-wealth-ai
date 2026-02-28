@@ -13,7 +13,7 @@ import WealthSim from "./pages/WealthSim";
 import Market from "./pages/Market";
 import Emergency from "./pages/Emergency";
 import Learn from "./pages/Learn";
-import Advisor from "./pages/Advisor";
+import Ping from "./pages/Ping";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -51,12 +51,12 @@ const App = () => (
                     <Route path="/allocation" element={<Allocation />} />
                     <Route path="/expenses" element={<Expenses />} />
                     <Route path="/goals" element={<Goals />} />
-                    <Route path="/buy-check" element={<BuyCheck />} />
+                    <Route path="/should-i-buy-this" element={<BuyCheck />} />
                     <Route path="/wealth-sim" element={<WealthSim />} />
-                    <Route path="/market" element={<Market />} />
-                    <Route path="/emergency" element={<Emergency />} />
+                    <Route path="/intel" element={<Market />} />
+                    <Route path="/shield" element={<Emergency />} />
                     <Route path="/learn" element={<Learn />} />
-                    <Route path="/advisor" element={<Advisor />} />
+                    <Route path="/ping" element={<Ping />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AppLayout>

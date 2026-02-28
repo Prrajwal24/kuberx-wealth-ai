@@ -38,7 +38,8 @@ export default function YakshaMascot() {
     // Suggested questions based on location
     const getSuggestions = () => {
         if (location.pathname.includes('/learn')) return ["Explain finance concepts", "How to earn XP?", "Help with quiz"];
-        if (location.pathname.includes('/advisor') || location.pathname.includes('/buy-check')) return ["Can I afford an iPhone?", "Investment advice", "Budgeting help"];
+        if (location.pathname.includes('/ping') || location.pathname.includes('/should-i-buy-this') || location.pathname.includes('/shield')) return ["How much insurance do I need?", "Emergency fund guide", "Protection score help", "Budgeting help"];
+        if (location.pathname.includes('/intel')) return ["What is Nifty 50?", "Is Gold a safe investment?", "Bitcoin vs Gold", "How does SIP work?"];
         return ["Show financial tips", "How am I doing today?", "Daily motivation"];
     };
 
@@ -50,6 +51,10 @@ export default function YakshaMascot() {
 
         if (location.pathname.includes('/learn')) {
             greeting = "Greetings, learner! I'm here to help you master the levels. If a concept like 'Compound Interest' puzzles you, just ask!";
+        } else if (location.pathname.includes('/intel')) {
+            greeting = "Welcome to the Intel hub. Here, we track the pulse of the economy. Gold represents stability, while the Nifty 50 reflects the strength of our industry. Use the growth simulator to see your future wealth!";
+        } else if (location.pathname.includes('/shield')) {
+            greeting = "Welcome to your financial fortress. A solid shield consists of an emergency fund and the right insurance. I've analyzed your protection gaps – let's fix them!";
         } else if (location.pathname.includes('/expenses') || location.pathname.includes('/dashboard')) {
             const budgetExceeded = 1500; // Mock budget data
             if (budgetExceeded > 1000) {

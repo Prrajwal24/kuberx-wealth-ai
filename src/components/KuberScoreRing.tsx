@@ -46,8 +46,8 @@ export default function KuberScoreRing({ score, label }: KuberScoreProps) {
         </div>
       </div>
       <span className={`text-sm font-semibold px-3 py-1 rounded-full ${score < 40 ? 'bg-destructive/20 text-destructive' :
-          score < 70 ? 'bg-warning/20 text-warning' :
-            'bg-success/20 text-success'
+        score < 70 ? 'bg-warning/20 text-warning' :
+          'bg-success/20 text-success'
         }`}>
         {label}
       </span>

@@ -2,7 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Wallet, Target, PieChart, ShoppingBag,
-  TrendingUp, BarChart3, Shield, GraduationCap, Bot, LogOut, Settings, User as UserIcon
+  TrendingUp, BarChart3, Shield, GraduationCap, Bell, LogOut, Settings, User as UserIcon
 } from "lucide-react";
 import YakshaMascot from "./YakshaMascot";
 import { useAuth } from "@/context/AuthContext";
@@ -20,12 +20,12 @@ const navItems = [
   { to: "/allocation", icon: Wallet, label: "Salary Split" },
   { to: "/expenses", icon: PieChart, label: "Expenses" },
   { to: "/goals", icon: Target, label: "Goals" },
-  { to: "/buy-check", icon: ShoppingBag, label: "Buy Check" },
+  { to: "/should-i-buy-this", icon: ShoppingBag, label: "Should I Buy This?" },
   { to: "/wealth-sim", icon: TrendingUp, label: "Wealth Sim" },
-  { to: "/market", icon: BarChart3, label: "Markets" },
-  { to: "/emergency", icon: Shield, label: "Emergency" },
+  { to: "/shield", icon: Shield, label: "Emergency" },
   { to: "/learn", icon: GraduationCap, label: "Academy" },
-  { to: "/advisor", icon: Bot, label: "AI Advisor" },
+  { to: "/intel", icon: BarChart3, label: "Intel" },
+  { to: "/ping", icon: Bell, label: "Ping" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -50,8 +50,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Horizontal Menu */}
-          <nav className="hidden lg:flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
-            {navItems.map((item) => {
+          <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar py-2 flex-1">
+            {navItems.filter(item => {
+              const isOnDashboard = location.pathname === '/';
+              const isCurrentPage = location.pathname === item.to;
+
+              // If on dashboard, hide Dashboard link
+              if (isOnDashboard && item.to === '/') return false;
+
+              // Hide the current page's link
+              if (isCurrentPage) return false;
+
+              return true;
+            }).map((item) => {
               const isActive = location.pathname === item.to;
               return (
                 <NavLink
@@ -115,23 +126,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Mobile Menu (Visible only under LG) */}
-        <div className="lg:hidden h-12 border-t border-white/5 overflow-x-auto no-scrollbar bg-[#0a0a0c]/40 backdrop-blur-md">
-          <div className="flex items-center gap-2 px-4 h-full min-w-max">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `
-                                    px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all
-                                    ${isActive ? "text-violet-400 bg-violet-600/10" : "text-muted-foreground"}
-                                `}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </div>
-        </div>
       </header>
 
       {/* Main content */}
